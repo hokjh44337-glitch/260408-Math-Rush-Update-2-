@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Rush</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ── 시작 화면 ── -->
+  <div class="screen active" id="S0">
+    <div class="ttl">Math Rush</div>
+    <div class="sub">연속 콤보로 버프, 오답 시 점수 차감!</div>
+
+    <div class="sec">난이도</div>
+    <div class="grid3" id="diffGrid">
+      <div class="sel-btn on-green" data-v="easy" onclick="pick(this,'diff')">
+        <div class="bm">쉬움</div><div class="bs">덧·뺄셈</div>
+      </div>
+      <div class="sel-btn" data-v="medium" onclick="pick(this,'diff')">
+        <div class="bm">중간</div><div class="bs">곱셈 포함</div>
+      </div>
+      <div class="sel-btn" data-v="hard" onclick="pick(this,'diff')">
+        <div class="bm">어려움</div><div class="bs">두자리 혼합</div>
+      </div>
+      <div class="sel-btn" data-v="expert" onclick="pick(this,'diff')">
+        <div class="bm">고난도</div><div class="bs">사칙연산 혼합</div>
+      </div>
+      <div class="sel-btn" data-v="impossible" onclick="pick(this,'diff')" style="grid-column:span 2">
+        <div class="bm">임파서블</div><div class="bs">미분 · 적분 · 라플라스</div>
+      </div>
+    </div>
+
+    <div class="sec">문제 유형</div>
+    <div class="grid2" id="modeGrid">
+      <div class="sel-btn on-purple" data-v="calc" onclick="pick(this,'mode')">
+        <div class="bm">계산 모드</div><div class="bs">식 → 정답 고르기</div>
+      </div>
+      <div class="sel-btn" data-v="reverse" onclick="pick(this,'mode')">
+        <div class="bm">역산 모드</div><div class="bs">숫자 → 식 고르기</div>
+      </div>
+    </div>
+
+    <div class="sec">게임 시간</div>
+    <div class="grid4" id="timeGrid">
+      <div class="sel-btn on-amber" data-v="15" onclick="pick(this,'time')">
+        <div class="bm">15초</div>
+      </div>
+      <div class="sel-btn" data-v="30" onclick="pick(this,'time')">
+        <div class="bm">30초</div>
+      </div>
+      <div class="sel-btn" data-v="60" onclick="pick(this,'time')">
+        <div class="bm">60초</div>
+      </div>
+      <div class="sel-btn" data-v="custom" onclick="pick(this,'time')">
+        <div class="bm">직접 설정</div>
+      </div>
+    </div>
+    <div class="custom-time-row hidden" id="customRow">
+      <input type="number" id="customSec" min="5" max="300" placeholder="초 입력 (5~300)">
+      <span class="custom-unit">초</span>
+    </div>
+
+    <div class="sec">오답 차감</div>
+    <div class="grid3" id="deductGrid">
+      <div class="sel-btn on-amber" data-v="0" onclick="pick(this,'deduct')">
+        <div class="bm">없음</div>
+      </div>
+      <div class="sel-btn" data-v="5" onclick="pick(this,'deduct')">
+        <div class="bm">−5점</div>
+      </div>
+      <div class="sel-btn" data-v="10" onclick="pick(this,'deduct')">
+        <div class="bm">−10점</div>
+      </div>
+    </div>
+
+    <button class="btn-go" onclick="startGame()">시작하기</button>
+  </div>
+
+  <!-- ── 플레이 화면 ── -->
+  <div class="screen" id="S1">
+    <div class="play-top">
+      <span class="pm">남은 시간 <span id="timeNum" class="clr-green">30</span>초</span>
+      <span class="pm" id="modeLabel">계산 모드</span>
+      <span class="pm">점수 <span id="score" class="clr-amber">0</span></span>
+    </div>
+    <div class="tbar-wrap"><div class="tbar" id="timerBar"></div></div>
+
+    <div class="srow">
+      <div class="sc"><div class="sl">정답</div><div class="sv clr-green" id="crtC">0</div></div>
+      <div class="sc"><div class="sl">오답</div><div class="sv clr-amber" id="wrgC">0</div></div>
+      <div class="sc"><div class="sl">정답률</div><div class="sv clr-pink" id="acc">-</div></div>
+    </div>
+
+    <div class="qlab" id="qlab">다음 식의 정답은?</div>
+    <div class="qbox" id="qbox">?</div>
+    <div class="choices" id="choices"></div>
+
+    <div class="brow">
+      <div class="combo-area">
+        <span class="combo-label">콤보</span>
+        <div class="cpips" id="pips"></div>
+        <span id="cnum" class="combo-count">0</span>
+        <span id="badge" class="bbadge hidden"></span>
+      </div>
+      <div class="fbt" id="fb"></div>
+    </div>
+
+    <div class="back-row">
+      <button class="btn-back" onclick="goHome()">처음으로 돌아가기</button>
+    </div>
+  </div>
+
+  <!-- ── 종료 화면 ── -->
+  <div class="screen" id="S2">
+    <div class="fx-wrap" id="fxWrap">
+      <canvas id="fx"></canvas>
+      <div class="end-hero">
+        <div class="end-sub" id="endSub"></div>
+        <div class="end-score" id="endScore">0</div>
+        <div class="end-label">점수</div>
+        <div class="end-rank" id="endRank"></div>
+      </div>
+    </div>
+
+    <div class="egrid">
+      <div class="ec"><div class="ecl">최고 기록</div><div class="ecv" id="eBest">0</div></div>
+      <div class="ec"><div class="ecl">정답률</div><div class="ecv" id="eAcc">-</div></div>
+      <div class="ec"><div class="ecl">최대 콤보</div><div class="ecv" id="eCombo">0</div></div>
+      <div class="ec"><div class="ecl">오답 차감</div><div class="ecv" id="eDeduct">0</div></div>
+    </div>
+
+    <button class="btn-restart" onclick="restartSame()">같은 설정으로 다시</button>
+    <button class="btn-home" onclick="goHome()">처음으로 돌아가기</button>
+  </div>
+
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
